@@ -1,0 +1,43 @@
+# Roblox
+*.rbxl
+*.rbxlx
+*.rbxm
+*.rbxmx
+roblox.yml
+
+# Aftman
+.aftman/
+
+# Rojo / Sync
+.rojo_plugin/
+default.project.json.lock
+
+# Wally
+Packages/
+ServerPackages/
+wally.lock
+
+# OS (System files)
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# VS Code / Editors
+.vscode/
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+.idea/
+
+# Additional scripts
+scripts/python/__pycache__/
+
+# Logs and temporary files
+*.log
+.temp/
+.tmp/
+
+# Testing & CI
+coverage/
+*.xml
