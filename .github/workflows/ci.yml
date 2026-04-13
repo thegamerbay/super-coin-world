@@ -1,0 +1,40 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  build_and_test:
+    name: Build & Run Tests (Open Cloud)
+    runs-on: ubuntu-latest
+    env:
+      ROBLOX_API_KEY: ${{ secrets.ROBLOX_API_KEY }}
+    concurrency:
+      group: luau-execution-${{ github.ref }}
+      cancel-in-progress: false # Open Cloud API limits concurrent requests
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+
+      - name: Setup Aftman
+        uses: ok-nick/setup-aftman@v0.4.2
+
+      - name: Install dependencies (Wally)
+        run: wally install
+
+      - name: Build Place File (.rbxl)
+        run: rojo build default.project.json --output dist.rbxl
+
+      - name: Upload & Run Tests
+        if: ${{ env.ROBLOX_API_KEY != '' }}
+        uses: thegamerbay/roblox-luau-execution-action@v1
+        with:
+          api_key: ${{ secrets.ROBLOX_API_KEY }}
+          universe_id: ${{ vars.ROBLOX_TEST_UNIVERSE_ID }}
+          place_id: ${{ vars.ROBLOX_TEST_PLACE_ID }}
+          place_file: 'dist.rbxl'
+          script_file: 'tasks/runTests.luau'
