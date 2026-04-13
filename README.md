@@ -1,4 +1,5 @@
 <div align="center">
+  <img src="assets/avatar.jpg" alt="Logo" width="256" height="256">
   <h1>🎮 Super Coin World 🎮</h1>
   <p><b>[Project under development...]</b></p>
   
@@ -16,6 +17,20 @@
 **Super Coin World** is a custom 3D platformer game inside of Roblox featuring innovative spherical, gravity-defying mechanics. Players can traverse fully 3D planetary biomes, run completely upside-down without falling off, and collect dynamically scattered coins across lush forests, icy wastelands, and massive desert dunes. 
 
 This repository demonstrates advanced client-server architecture, custom gravity simulation, and an elegant synchronization process between your local IDE (VS Code) and Roblox Studio using **Rojo**, strict package management using **Wally**, and toolchain management using **Aftman**.
+
+---
+
+## 📸 Gallery
+
+<p align="center">
+  <img src="assets/001.jpg" width="49%">
+  <img src="assets/002.jpg" width="49%">
+</p>
+<p align="center">
+  <img src="assets/003.jpg" width="32%">
+  <img src="assets/004.jpg" width="32%">
+  <img src="assets/005.jpg" width="32%">
+</p>
 
 ---
 
