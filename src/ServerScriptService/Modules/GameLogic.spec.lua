@@ -4,15 +4,12 @@ return function()
     local Workspace = game:GetService("Workspace")
 
     describe("GameLogic.init", function()
-        it("should create a Baseplate", function()
-            -- Find and remove any existing Baseplate and SpawnLocation
-            local existing = Workspace:FindFirstChild("Baseplate")
-            if existing then
-                existing:Destroy()
-            end
-            local existingSpawn = Workspace:FindFirstChild("SpawnLocation")
-            if existingSpawn then
-                existingSpawn:Destroy()
+        it("should create planetary spheres", function()
+            -- Clean out old planets if they exist from previous tests
+            for _, child in pairs(Workspace:GetChildren()) do
+                if child.Name:match("^Planet_") or child.Name == "SpawnLocation" then
+                    child:Destroy()
+                end
             end
 
             -- Stub CoinManager and EnvironmentManager so they don't loop or interfere with test execution
@@ -26,17 +23,21 @@ return function()
 
             GameLogic.init()
 
-            local baseplate = Workspace:FindFirstChild("Baseplate")
-            expect(baseplate).to.be.ok()
-            expect(baseplate.Name).to.equal("Baseplate")
-            expect(baseplate.Anchored).to.equal(true)
-            expect(baseplate.Position.Y).to.equal(0)
+            local startPlanet = Workspace:FindFirstChild("Planet_Start")
+            expect(startPlanet).to.be.ok()
+            expect(startPlanet.Shape).to.equal(Enum.PartType.Ball)
+            
+            local icePlanet = Workspace:FindFirstChild("Planet_Ice")
+            expect(icePlanet).to.be.ok()
+            
+            local sandPlanet = Workspace:FindFirstChild("Planet_Sand")
+            expect(sandPlanet).to.be.ok()
 
             local spawnLocation = Workspace:FindFirstChild("SpawnLocation")
             expect(spawnLocation).to.be.ok()
             expect(spawnLocation.Name).to.equal("SpawnLocation")
             expect(spawnLocation.Anchored).to.equal(true)
-            expect(spawnLocation.Position.Y).to.equal(1)
+            expect(spawnLocation.Position.Y).to.equal(40)
 
             -- Restore
             CoinManager.spawnCoin = originalSpawn

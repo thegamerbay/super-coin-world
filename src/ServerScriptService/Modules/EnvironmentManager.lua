@@ -2,33 +2,40 @@
 local EnvironmentManager = {}
 local InsertService = game:GetService("InsertService")
 local Workspace = game:GetService("Workspace")
+local CollectionService = game:GetService("CollectionService")
 
 local TREE_IDS = {
     12549617200
 }
 
--- Divide the map into 5 zones to prevent trees from spawning clumped together
-local SPAWN_ZONES = {
-    { xMin = -45, xMax = -15, zMin = -45, zMax = -15 }, -- Top Left
-    { xMin = 15,  xMax = 45,  zMin = -45, zMax = -15 }, -- Top Right
-    { xMin = -45, xMax = -15, zMin = 15,  zMax = 45 },  -- Bottom Left
-    { xMin = 15,  xMax = 45,  zMin = 15,  zMax = 45 },  -- Bottom Right
-    { xMin = -15, xMax = 15,  zMin = -15, zMax = 15 },  -- Center
-}
+-- Removed flat SPAWN_ZONES
 
 function EnvironmentManager.spawnTrees()
-    -- Configure collision parameters to ignore the floor (Baseplate)
-    local overlapParams = OverlapParams.new()
-    local baseplate = Workspace:WaitForChild("Baseplate", 5)
-    if baseplate then
-        overlapParams.FilterType = Enum.RaycastFilterType.Exclude
-        overlapParams.FilterDescendantsInstances = {baseplate}
-    end
+    -- Only spawn trees on planets
+    local planets = CollectionService:GetTagged("PlanetNode")
+    if #planets == 0 then return end
 
-    for _, zone in ipairs(SPAWN_ZONES) do
-        local randomId = TREE_IDS[math.random(1, #TREE_IDS)]
+    -- Create overlap parameters to ignore planets
+    local overlapParams = OverlapParams.new()
+    overlapParams.FilterType = Enum.RaycastFilterType.Exclude
+    overlapParams.FilterDescendantsInstances = planets
+
+    for _, targetPlanet in ipairs(planets) do
+        local pl = targetPlanet :: BasePart
         
-        -- Load the asset model from the Roblox cloud
+        local treeCount = 5
+        if pl.Name == "Planet_Start" then
+            treeCount = 10
+        elseif pl.Name == "Planet_Sand" then
+            treeCount = 40
+        end
+
+        local radius = (pl.Size.X / 2)
+        
+        for i = 1, treeCount do
+            local randomId = TREE_IDS[math.random(1, #TREE_IDS)]
+            
+            -- Load the asset model from the Roblox cloud
         local success, loadedModel = pcall(function()
             return InsertService:LoadAsset(randomId)
         end)
@@ -58,38 +65,54 @@ function EnvironmentManager.spawnTrees()
             tree.Parent = Workspace
             local boundingBoxCFrame, size = tree:GetBoundingBox()
             
-            -- Search for a free spot in the current zone (up to 15 attempts)
-            local finalDelta = nil
+            -- Search for a free spot on the planet's surface (up to 15 attempts)
+            local finalCFrame = nil
             for _ = 1, 15 do
-                local randomX = math.random(zone.xMin, zone.xMax)
-                local randomZ = math.random(zone.zMin, zone.zMax)
-                
-                -- Calculate so that the bottom of the tree (BoundingBox) touches the floor (Y=1)
-                local targetCenterY = 1 + (size.Y / 2) 
-                local testCenterCFrame = CFrame.new(randomX, targetCenterY, randomZ)
+                local u = math.random()
+                local v = math.random()
+                local theta = 2 * math.pi * u
+                local phi = math.acos(2 * v - 1)
 
-                -- Check if there's a Leaderboard, spawn, or another tree here
-                local partsInside = Workspace:GetPartBoundsInBox(testCenterCFrame, size, overlapParams)
+                -- Offset by half the tree's height so it sits on the surface
+                -- Minus 1.5 studs so the roots sink into the ground and don't hover
+                local spawnRadius = radius + (size.Y / 2) - 1.5
+
+                local x = spawnRadius * math.sin(phi) * math.cos(theta)
+                local y = spawnRadius * math.sin(phi) * math.sin(theta)
+                local z = spawnRadius * math.cos(phi)
+
+                local worldPos = targetPlanet.Position + Vector3.new(x, y, z)
+                
+                -- The tree base usually needs to look away from the center
+                -- And usually models stand up on the Y axis
+                local testCFrame = CFrame.lookAt(worldPos, targetPlanet.Position) * CFrame.Angles(math.pi/2, 0, 0)
+
+                -- Check if there's another tree or object here
+                local partsInside = Workspace:GetPartBoundsInBox(testCFrame, size, overlapParams)
 
                 if #partsInside == 0 then
-                    -- Calculate the shift from the original position to the new one
-                    finalDelta = testCenterCFrame.Position - boundingBoxCFrame.Position
+                    finalCFrame = testCFrame
                     break
                 end
             end
 
-            if finalDelta then
-                -- Smoothly move the model to the found location
-                tree:PivotTo(tree:GetPivot() + finalDelta)
+            if finalCFrame then
+                -- Smoothly move the model to the found spherical location
+                -- Determine the offset between the model's Pivot and its bounding box center
+                local pivotOffset = tree:GetPivot():ToObjectSpace(boundingBoxCFrame)
+                tree:PivotTo(finalCFrame * pivotOffset:Inverse())
             else
-                -- If the zone is completely blocked, delete the tree
+                -- If we couldn't find a spot, delete the tree
                 tree:Destroy()
             end
             
             loadedModel:Destroy()
         else
-            warn("Failed to load tree with ID: " .. tostring(randomId) .. ". Error: " .. tostring(loadedModel))
+            if loadedModel then
+                loadedModel:Destroy()
+            end
         end
+    end
     end
 end
 

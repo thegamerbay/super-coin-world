@@ -13,7 +13,16 @@
 
 <br/>
 
-The project demonstrates an elegant synchronization process between your local IDE (VS Code) and Roblox Studio using **Rojo**, strict package management using **Wally**, and toolchain management using **Aftman**.
+**Super Coin World** is a custom 3D platformer game inside of Roblox featuring innovative spherical, gravity-defying mechanics. Players can traverse fully 3D planetary biomes, run completely upside-down without falling off, and collect dynamically scattered coins across lush forests, icy wastelands, and massive desert dunes. 
+
+This repository demonstrates advanced client-server architecture, custom gravity simulation, and an elegant synchronization process between your local IDE (VS Code) and Roblox Studio using **Rojo**, strict package management using **Wally**, and toolchain management using **Aftman**.
+
+---
+
+## 🌌 Gameplay Features
+* **Spherical Gravity Controller**: Utilizing EgoMoose's Wallstick concepts, characters completely align their normal vector to whichever planet's gravitational pull is strongest, allowing for seamless spherical orbiting.
+* **Procedural Biome Generation**: Instead of a flat baseplate, the world initiates multiple planets (`Planet_Start`, `Planet_Ice`, `Planet_Sand`) with spherical coordinate algorithms dynamically spawning trees and resources perfectly aligned to each surface.
+* **Persistent Leaderboards**: Global tracking of coin collectors powered by `DataStoreService`, dynamically displayed on tilting in-game SurfaceGuis that naturally align with planetary curvature.
 
 ---
 
@@ -56,6 +65,13 @@ To run the Selene linter locally before pushing code:
 ```bash
 selene src
 ```
+
+---
+
+## 🙏 Credits & Acknowledgements
+
+This project relies on the incredible open-source contributions of the Roblox developer community. We extend our deepest gratitude to:
+* **[EgoMoose / Rbx-Wallstick](https://github.com/EgoMoose/Rbx-Wallstick)** - The core physics logic powering our entire planetary gravity system! EgoMoose's Wallstick controller elegantly replaces default Roblox physics, allowing our characters to dynamically align their gravity vectors and experience true spherical planet exploration.
 
 ---
 

@@ -53,7 +53,7 @@ function CoinManager.createCollectEffect(position: Vector3, color: Color3)
     Debris:AddItem(attachment, 1.5)
 end
 
-function CoinManager.spawnCoin()
+function CoinManager.spawnCoin(specificPlanet: BasePart?)
     -- Use our testable logic
     local randomRoll = math.random(1, 100)
     local isRare = CoinManager.Logic.isRare(randomRoll)
@@ -65,25 +65,46 @@ function CoinManager.spawnCoin()
     coin.Shape = Enum.PartType.Cylinder
     coin.Size = Vector3.new(stats.thickness, stats.diameter, stats.diameter)
     
-    -- === NEW SAFE SPAWN LOGIC ===
-    local startY = 4 
-    local finalPos = Vector3.new(0, startY, 0)
+    -- === SPHERICAL GENERATION LOGIC ===
+    local finalPos: Vector3 = Vector3.new(0, 0, 0)
+    local targetPlanet: BasePart? = specificPlanet
 
-    -- Give the server 15 attempts to find an empty spot
-    for _ = 1, 15 do
-        local testPos = Vector3.new(math.random(-20, 20), startY, math.random(-20, 20))
+    if specificPlanet then
+        -- Create overlap parameters to ignore planets for spawn clearance
+        local overlapParams = OverlapParams.new()
+        overlapParams.FilterType = Enum.RaycastFilterType.Exclude
+        overlapParams.FilterDescendantsInstances = {specificPlanet}
         
-        -- Virtually check a box the size of the coin at this point
-        local partsInside = Workspace:GetPartBoundsInBox(CFrame.new(testPos), coin.Size)
+        local radius = (specificPlanet.Size.X / 2) + (stats.diameter / 2) -- Radius + coin half-height
 
-        -- If the array is empty, there is nothing at this spot
-        if #partsInside == 0 then
-            finalPos = testPos
-            break -- Found a free spot, break out of the loop!
+        for iter = 1, 15 do
+            -- Generate a random point on a sphere (uniform distribution)
+            local u = math.random()
+            local v = math.random()
+            local theta = 2 * math.pi * u
+            local phi = math.acos(2 * v - 1)
+
+            local x = radius * math.sin(phi) * math.cos(theta)
+            local y = radius * math.sin(phi) * math.sin(theta)
+            local z = radius * math.cos(phi)
+
+            local testPos = targetPlanet.Position + Vector3.new(x, y, z)
+            
+            -- Check if spot is free
+            local partsInside = Workspace:GetPartBoundsInBox(CFrame.new(testPos), coin.Size, overlapParams)
+            if #partsInside == 0 then
+                finalPos = testPos
+                break
+            end
         end
     end
 
-    coin.Position = finalPos
+    if targetPlanet then
+        -- Look away from the planet so the coin isn't "laying flat" against it
+        coin.CFrame = CFrame.lookAt(finalPos, targetPlanet.Position) * CFrame.Angles(math.pi/2, 0, 0)
+    else
+        coin.Position = finalPos
+    end
     -- =======================================
     coin.Transparency = 1 -- Invisible on the server
     coin.BrickColor = stats.color
@@ -102,13 +123,13 @@ function CoinManager.spawnCoin()
 
     -- Collecting event
     local touchConnection = coin.Touched:Connect(function(otherPart)
-        CoinManager.handleCoinTouched(otherPart, coin, coinTrove, stats)
+        CoinManager.handleCoinTouched(otherPart, coin, coinTrove, stats, targetPlanet)
     end)
     
     coinTrove:Add(touchConnection)
 end
 
-function CoinManager.handleCoinTouched(otherPart: BasePart, coin: BasePart, coinTrove: any, stats: CoinStats)
+function CoinManager.handleCoinTouched(otherPart: BasePart, coin: BasePart, coinTrove: any, stats: CoinStats, originPlanet: BasePart?)
     local character = otherPart.Parent
     if not character then return end
     
@@ -144,7 +165,7 @@ function CoinManager.handleCoinTouched(otherPart: BasePart, coin: BasePart, coin
             CoinManager.createCollectEffect(collectPos, collectColor)
             
             task.wait(1)
-            CoinManager.spawnCoin()
+            CoinManager.spawnCoin(originPlanet)
         end
     end
 end

@@ -69,7 +69,12 @@ return function()
             end
             
             local startCount = #CollectionService:GetTagged("AnimatedCoin")
-            CoinManager.spawnCoin()
+            
+            local dummyPlanet = Instance.new("Part")
+            dummyPlanet.Size = Vector3.new(20, 20, 20)
+            dummyPlanet.Position = Vector3.new(0, 0, 0)
+            
+            CoinManager.spawnCoin(dummyPlanet)
             local endCount = #CollectionService:GetTagged("AnimatedCoin")
             
             expect(endCount).to.equal(startCount + 1)
@@ -80,6 +85,8 @@ return function()
                     coin:Destroy()
                 end
             end
+            
+            dummyPlanet:Destroy()
         end)
     end)
     
@@ -139,10 +146,11 @@ return function()
             
             local coin = Instance.new("Part")
             local stats = { value = 5, diameter = 1, thickness = 1, color = BrickColor.new("Really red") }
+            local dummyPlanet = Instance.new("Part")
             
             expect(function()
                 pcall(function()
-                    CoinManager.handleCoinTouched(humanoidRootPart, coin, troveMock, stats)
+                    CoinManager.handleCoinTouched(humanoidRootPart, coin, troveMock, stats, dummyPlanet)
                 end)
             end).never.to.throw()
             
@@ -150,6 +158,7 @@ return function()
             playerMock:Destroy()
             characterMock:Destroy()
             coin:Destroy()
+            dummyPlanet:Destroy()
         end)
     end)
 end

@@ -5,22 +5,30 @@ local Workspace = game:GetService("Workspace")
 
 local leaderboardStore = DataStoreService:GetOrderedDataStore("GlobalCoinLeaderboard")
 
--- 1. NEW: Create a glowing neon background (Glow Frame)
+-- 1. Calculations for placing on a sphere
+local planetCenter = Vector3.new(0, 0, 0)
+local planetRadius = 40
+local boardHeight = 12
+local distanceToCenter = planetRadius + (boardHeight / 2)
+
+-- Rotate -25 degrees on the X axis to place it slightly in front of the spawn
+local boardCFrame = CFrame.new(planetCenter) * CFrame.Angles(math.rad(-25), 0, 0) * CFrame.new(0, distanceToCenter, 0)
+
+-- 2. NEW: Create a glowing neon background (Glow Frame)
 local glowFrame = Instance.new("Part")
 glowFrame.Name = "LeaderboardGlow"
--- Make the frame slightly wider and taller than the main board, but thinner
 glowFrame.Size = Vector3.new(15.4, 12.4, 0.5) 
-glowFrame.Position = Vector3.new(0, 6, -20.2) -- Place 0.2 studs behind the main board
+glowFrame.CFrame = boardCFrame * CFrame.new(0, 0, -0.2) -- Place 0.2 studs behind the main board
 glowFrame.Anchored = true
-glowFrame.BrickColor = BrickColor.new("Deep orange") -- Beautiful golden-orange color for coins
-glowFrame.Material = Enum.Material.Neon -- The material that makes the object glow
+glowFrame.BrickColor = BrickColor.new("Deep orange")
+glowFrame.Material = Enum.Material.Neon
 glowFrame.Parent = Workspace
 
--- 2. Create the physical board in the world (Black screen)
+-- 3. Create the physical board in the world (Black screen)
 local board = Instance.new("Part")
 board.Name = "LeaderboardBoard"
 board.Size = Vector3.new(15, 12, 1)
-board.Position = Vector3.new(0, 6, -20)
+board.CFrame = boardCFrame
 board.Anchored = true
 board.BrickColor = BrickColor.new("Really black")
 board.Material = Enum.Material.SmoothPlastic
