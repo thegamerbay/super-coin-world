@@ -5,8 +5,12 @@ local Players = game:GetService("Players")
 local Workspace = game:GetService("Workspace")
 local DataStoreService = game:GetService("DataStoreService")
 
-local coinStore = DataStoreService:GetDataStore("PlayerCoinsStore")
-local leaderboardStore = DataStoreService:GetOrderedDataStore("GlobalCoinLeaderboard")
+local coinStore
+local leaderboardStore
+pcall(function()
+    coinStore = DataStoreService:GetDataStore("PlayerCoinsStore")
+    leaderboardStore = DataStoreService:GetOrderedDataStore("GlobalCoinLeaderboard")
+end)
 
 local CoinManager = require(script.Parent.CoinManager)
 local EnvironmentManager = require(script.Parent.EnvironmentManager)
@@ -26,14 +30,18 @@ local function savePlayerData(player: Player)
                 JumpPurchases = player:GetAttribute("JumpPurchases") or 0
             }
             
-            pcall(function()
-                coinStore:SetAsync(tostring(player.UserId), dataToSave)
-            end)
+            if coinStore then
+                pcall(function()
+                    coinStore:SetAsync(tostring(player.UserId), dataToSave)
+                end)
+            end
             
             -- For the leaderboard, we continue to save just one number
-            pcall(function()
-                leaderboardStore:SetAsync(tostring(player.UserId), coins.Value)
-            end)
+            if leaderboardStore then
+                pcall(function()
+                    leaderboardStore:SetAsync(tostring(player.UserId), coins.Value)
+                end)
+            end
         end
     end
 end
@@ -134,9 +142,12 @@ function GameLogic.onPlayerAdded(player: Player)
     coins.Parent = leaderstats
 
     -- Load data
-    local success, savedData = pcall(function()
-        return coinStore:GetAsync(tostring(player.UserId))
-    end)
+    local success, savedData = false, nil
+    if coinStore then
+        success, savedData = pcall(function()
+            return coinStore:GetAsync(tostring(player.UserId))
+        end)
+    end
 
     if success and savedData then
         -- DATA MIGRATION: If the player played before, their save is a number

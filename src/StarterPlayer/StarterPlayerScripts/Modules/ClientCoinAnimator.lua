@@ -13,7 +13,8 @@ function ClientCoinAnimator.onCoinAdded(coin: BasePart)
     -- CRITICAL FIX: EgoMoose's Wallstick system creates proxy clones of objects for gravity physics.
     -- These clones inherit the "AnimatedCoin" CollectionService tag! 
     -- We MUST ignore the Wallstick clones to prevent creating a second "ghost" spinning coin.
-    if coin:IsDescendantOf(Workspace:FindFirstChild("Wallstick")) then return end
+    local wallstickFolder = Workspace:FindFirstChild("Wallstick")
+    if wallstickFolder and coin:IsDescendantOf(wallstickFolder) then return end
     if coin.Parent ~= Workspace then return end
 
     if ClientCoinAnimator.activeCoins[coin] then return end -- Prevent duplicates
