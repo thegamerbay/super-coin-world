@@ -18,10 +18,10 @@ function ClientShop.init()
     screenGui.ResetOnSpawn = false
     screenGui.Parent = PlayerGui
 
-    -- Shop open button (middle left)
+    -- Shop open button (top left, below chat)
     local openButton = Instance.new("TextButton")
     openButton.Size = UDim2.new(0, 120, 0, 50)
-    openButton.Position = UDim2.new(0, 20, 0.5, -25)
+    openButton.Position = UDim2.new(0, 20, 0, 70)
     openButton.Text = "🛒 Shop"
     openButton.Font = Enum.Font.FredokaOne
     openButton.TextScaled = true
