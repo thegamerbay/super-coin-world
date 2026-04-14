@@ -38,6 +38,9 @@ This repository demonstrates advanced client-server architecture, custom gravity
 * **Spherical Gravity Controller**: Utilizing EgoMoose's Wallstick concepts, characters completely align their normal vector to whichever planet's gravitational pull is strongest, allowing for seamless spherical orbiting.
 * **Procedural Biome Generation**: Instead of a flat baseplate, the world initiates multiple planets (`Planet_Start`, `Planet_Ice`, `Planet_Sand`) with spherical coordinate algorithms dynamically spawning trees and resources perfectly aligned to each surface.
 * **Persistent Leaderboards**: Global tracking of coin collectors powered by `DataStoreService`, dynamically displayed on tilting in-game SurfaceGuis that naturally align with planetary curvature.
+* **Upgrade Shop Ecosystem**: Players can spend collected coins to permanently increase their walk speed and jump height, with purchase progress safely persisting across sessions.
+* **Optimized Client Rendering**: Visual effects such as coin rotation and animations are completely delegated to the client-side, reducing server network strain while ensuring hitboxes remain server-authoritative.
+* **Dynamic Soundtrack Engine**: A randomized, non-repeating music system automatically streams a variety of background tracks upon each player's entry.
 
 ---
 
