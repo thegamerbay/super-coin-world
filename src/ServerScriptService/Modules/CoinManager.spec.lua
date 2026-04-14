@@ -97,7 +97,7 @@ return function()
             local troveMock = {
                 Clean = function() error("Should not be called") end
             }
-            local stats = { value = 1, diameter = 1, thickness = 1, color = BrickColor.new("White") }
+            local stats = { value = 1, diameter = 1, thickness = 1, color = Color3.fromRGB(255, 255, 255) }
             
             -- Should not error and should not call trove:Clean()
             expect(function()
@@ -145,7 +145,7 @@ return function()
             }
             
             local coin = Instance.new("Part")
-            local stats = { value = 5, diameter = 1, thickness = 1, color = BrickColor.new("Really red") }
+            local stats = { value = 5, diameter = 1, thickness = 1, color = Color3.fromRGB(255, 0, 0) }
             local dummyPlanet = Instance.new("Part")
             
             expect(function()
