@@ -26,7 +26,8 @@ function ClientCoinAnimator.onCoinAdded(coin: BasePart)
     clone.Name = "Visual" .. coin.Name
     clone.Shape = coin.Shape
     clone.Size = Vector3.new(0.01, 0.01, 0.01) -- Start near zero
-    clone.BrickColor = coin.BrickColor -- Restored back to native color
+    clone.Color = coin.Color -- Copied exact precise RGB color
+
     clone.Material = coin.Material
     clone.Anchored = true
     clone.CanCollide = false

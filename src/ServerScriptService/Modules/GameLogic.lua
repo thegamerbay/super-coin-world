@@ -87,7 +87,7 @@ function GameLogic.init()
     -- Opposite direction of Ice, distance of centers = 250
     planet3.Position = Vector3.new(-230.77, -96.15, 0)
     planet3.Anchored = true
-    planet3.BrickColor = BrickColor.new("Sand")
+    planet3.Color = Color3.fromRGB(242, 218, 107) -- Warmer, more yellow sand
     planet3.Material = Enum.Material.Sand
     planet3.Parent = Workspace
     CollectionService:AddTag(planet3, "PlanetNode")
@@ -102,24 +102,24 @@ function GameLogic.init()
 
     task.spawn(function()
         EnvironmentManager.spawnTrees()
+
+        for _, planet in ipairs(CollectionService:GetTagged("PlanetNode")) do
+            local maxCoins = 8
+            if planet.Name == "Planet_Ice" then
+                maxCoins = 8
+            elseif planet.Name == "Planet_Sand" then
+                maxCoins = 64
+            end
+            for i = 1, maxCoins do
+                CoinManager.spawnCoin(planet :: BasePart)
+            end
+        end
     end)
 
     Players.PlayerAdded:Connect(GameLogic.onPlayerAdded)
     Players.PlayerRemoving:Connect(function(player: Player)
         savePlayerData(player)
     end)
-
-    for _, planet in ipairs(CollectionService:GetTagged("PlanetNode")) do
-        local maxCoins = 8
-        if planet.Name == "Planet_Ice" then
-            maxCoins = 8
-        elseif planet.Name == "Planet_Sand" then
-            maxCoins = 64
-        end
-        for i = 1, maxCoins do
-            CoinManager.spawnCoin(planet :: BasePart)
-        end
-    end
 
     task.spawn(function()
         while true do

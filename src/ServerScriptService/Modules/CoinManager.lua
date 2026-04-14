@@ -11,7 +11,7 @@ export type CoinStats = {
     value: number,
     diameter: number,
     thickness: number,
-    color: BrickColor
+    color: Color3
 }
 
 -- ==========================================
@@ -27,9 +27,9 @@ end
 -- Get all coin stats based on rarity
 function CoinManager.Logic.getCoinStats(isRare: boolean): CoinStats
     if isRare then
-        return { value = 5, diameter = 4, thickness = 0.4, color = BrickColor.new("Really red") }
+        return { value = 5, diameter = 4, thickness = 0.4, color = Color3.fromRGB(255, 120, 0) } -- Crisp glowing orange
     else
-        return { value = 1, diameter = 2.5, thickness = 0.2, color = BrickColor.new("Bright yellow") }
+        return { value = 1, diameter = 2.5, thickness = 0.2, color = Color3.fromRGB(255, 235, 0) } -- Classic yellow
     end
 end
 
@@ -107,7 +107,7 @@ function CoinManager.spawnCoin(specificPlanet: BasePart?)
     end
     -- =======================================
     coin.Transparency = 1 -- Invisible on the server
-    coin.BrickColor = stats.color
+    coin.Color = stats.color
     coin.Material = Enum.Material.Neon
     coin.Anchored = true
     coin.CanCollide = false
