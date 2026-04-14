@@ -24,12 +24,14 @@ return function()
             local coin = Instance.new("Part")
             coin.Name = "TestCoin"
             coin.Position = Vector3.new(10, 20, 30)
+            coin.Parent = Workspace
 
             ClientCoinAnimator.onCoinAdded(coin)
 
             local data = ClientCoinAnimator.activeCoins[coin]
             expect(data).to.be.ok()
-            expect(data.startPos).to.equal(Vector3.new(10, 20, 30))
+            expect(data.baseCFrame).to.be.ok()
+            expect(data.targetSize).to.be.ok()
             
             local clone = data.part
             expect(clone).to.be.ok()
@@ -47,6 +49,7 @@ return function()
     describe("ClientCoinAnimator.onCoinRemoved", function()
         it("should remove tracking and destroy clone", function()
             local coin = Instance.new("Part")
+            coin.Parent = Workspace
             
             -- Add first
             ClientCoinAnimator.onCoinAdded(coin)

@@ -10,6 +10,12 @@ ClientCoinAnimator.activeCoins = {}
 -- Create a visual dummy for a given coin hitbox
 function ClientCoinAnimator.onCoinAdded(coin: BasePart)
     if not coin:IsA("BasePart") then return end
+    -- CRITICAL FIX: EgoMoose's Wallstick system creates proxy clones of objects for gravity physics.
+    -- These clones inherit the "AnimatedCoin" CollectionService tag! 
+    -- We MUST ignore the Wallstick clones to prevent creating a second "ghost" spinning coin.
+    if coin:IsDescendantOf(Workspace:FindFirstChild("Wallstick")) then return end
+    if coin.Parent ~= Workspace then return end
+
     if ClientCoinAnimator.activeCoins[coin] then return end -- Prevent duplicates
 
     local targetSize = coin.Size -- Remember original size
@@ -19,7 +25,7 @@ function ClientCoinAnimator.onCoinAdded(coin: BasePart)
     clone.Name = "Visual" .. coin.Name
     clone.Shape = coin.Shape
     clone.Size = Vector3.new(0.01, 0.01, 0.01) -- Start near zero
-    clone.BrickColor = coin.BrickColor
+    clone.BrickColor = coin.BrickColor -- Restored back to native color
     clone.Material = coin.Material
     clone.Anchored = true
     clone.CanCollide = false
@@ -27,19 +33,14 @@ function ClientCoinAnimator.onCoinAdded(coin: BasePart)
     clone.Position = coin.Position
     clone.Parent = Workspace
     
-    -- Configure and play the animation
-    local tweenInfo = TweenInfo.new(
-        0.5, -- Animation duration
-        Enum.EasingStyle.Back, -- "Spring" style: slightly overshoots and bounces back
-        Enum.EasingDirection.Out
-    )
-    local tween = TweenService:Create(clone, tweenInfo, {Size = targetSize})
-    tween:Play()
-    
+    -- Ensure the server coin hitbox is completely invisible locally
+    coin.Transparency = 1
+
     ClientCoinAnimator.activeCoins[coin] = {
         part = clone,
-        startPos = coin.Position,
-        timePassed = 0
+        baseCFrame = coin.CFrame, -- Store the original orientation relative to the planet
+        timePassed = 0,
+        targetSize = targetSize
     }
 end
 
@@ -58,12 +59,24 @@ end
 function ClientCoinAnimator.onRenderStepped(deltaTime: number)
     for _, data in pairs(ClientCoinAnimator.activeCoins) do
         data.timePassed += deltaTime
-        local rotation = CFrame.Angles(0, math.rad(100) * data.timePassed, 0)
-        local hoverOffset = Vector3.new(0, math.sin(data.timePassed * 3) * 0.5, 0)
         
-        -- Apply transformations to the purely visual clone
+        -- Manual size animation to prevent engine visual tearing
+        if data.timePassed < 0.5 then
+            local alpha = TweenService:GetValue(data.timePassed / 0.5, Enum.EasingStyle.Back, Enum.EasingDirection.Out)
+            data.part.Size = Vector3.new(0.01, 0.01, 0.01):Lerp(data.targetSize, alpha)
+        elseif data.part.Size ~= data.targetSize then
+            data.part.Size = data.targetSize
+        end
+        
+        -- Rotation around the local Y axis
+        local rotation = CFrame.Angles(0, math.rad(100) * data.timePassed, 0)
+        
+        -- Hovering (offset along the local Y axis via CFrame)
+        local hoverOffset = CFrame.new(0, math.sin(data.timePassed * 3) * 0.5, 0)
+        
+        -- Apply offset and rotation to the coin's base CFrame
         if data.part and data.part.Parent then
-            data.part.CFrame = CFrame.new(data.startPos + hoverOffset) * rotation
+            data.part.CFrame = data.baseCFrame * hoverOffset * rotation
         end
     end
 end
