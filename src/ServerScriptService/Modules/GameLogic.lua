@@ -112,7 +112,7 @@ function GameLogic.init()
     for _, planet in ipairs(CollectionService:GetTagged("PlanetNode")) do
         local maxCoins = 8
         if planet.Name == "Planet_Ice" then
-            maxCoins = 16
+            maxCoins = 8
         elseif planet.Name == "Planet_Sand" then
             maxCoins = 64
         end
