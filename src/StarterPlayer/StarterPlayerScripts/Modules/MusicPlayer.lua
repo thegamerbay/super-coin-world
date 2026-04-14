@@ -20,6 +20,12 @@ MusicPlayer.TRACK_LIST = {
 }
 
 function MusicPlayer.init()
+    local rng = Random.new()
+    for i = #MusicPlayer.TRACK_LIST, 2, -1 do
+        local j = rng:NextInteger(1, i)
+        MusicPlayer.TRACK_LIST[i], MusicPlayer.TRACK_LIST[j] = MusicPlayer.TRACK_LIST[j], MusicPlayer.TRACK_LIST[i]
+    end
+
     MusicPlayer.currentTrackIndex = 1
     
     local musicPlayer = Instance.new("Sound")
