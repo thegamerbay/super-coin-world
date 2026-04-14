@@ -269,6 +269,12 @@ function WallstickClass._stepRenderCharacter(self: Wallstick, _dt: number)
 	local rootCameraOffset = realRootCF:ToObjectSpace(workspace.CurrentCamera.CFrame)
 	local geometryCameraCF = fakeRootCF * rootCameraOffset
 
+	-- === SHOP UPGRADE SYNCHRONIZATION ===
+	self.fake.humanoid.WalkSpeed = self.real.humanoid.WalkSpeed
+	self.fake.humanoid.JumpHeight = self.real.humanoid.JumpHeight
+	self.fake.humanoid.UseJumpPower = self.real.humanoid.UseJumpPower
+	-- ====================================
+
 	self.fake.humanoid.Jump = self.real.humanoid.Jump
 	self.fake.humanoid:Move(GravityCamera.getMoveVector(geometryCameraCF), false)
 
