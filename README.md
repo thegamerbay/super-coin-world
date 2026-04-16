@@ -3,6 +3,9 @@
   <h1>🎮 Super Coin World 🎮</h1>
   <p><b>[Project under development...]</b></p>
   
+[![Play Game](https://img.shields.io/badge/Play_Game-10b526?style=for-the-badge&logo=roblox&logoColor=white)](https://www.roblox.com/games/90225374692181/Super-Coin-World)
+  <br/>
+
   ![Roblox](https://img.shields.io/badge/Roblox-Studio-000000?style=for-the-badge&logo=roblox&logoColor=white)
   ![Lua](https://img.shields.io/badge/Lua-Language-2C2D72?style=for-the-badge&logo=lua&logoColor=white)
   ![Rojo](https://img.shields.io/badge/Rojo-Sync-FF4B4B?style=for-the-badge)
