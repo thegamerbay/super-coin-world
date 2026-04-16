@@ -4,7 +4,7 @@ local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
 -- Item database (baseCost - starting price)
 local SHOP_ITEMS = {
-    Speed = { name = "Walk Speed", baseCost = 10, walkSpeedBoost = 4 },
+    Speed = { name = "Walk Speed", baseCost = 10, walkSpeedBoost = 2 },
     Jump = { name = "Jump Height", baseCost = 15, jumpHeightBoost = 5 }
 }
 

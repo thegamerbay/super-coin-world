@@ -85,7 +85,7 @@ return function()
             expect(msg).to.equal("Success!")
             expect(coins.Value).to.equal(10) -- 20 - 10
             expect(attrs.SpeedPurchases).to.equal(1)
-            expect(humanoid.WalkSpeed).to.equal(20) -- 16 + 4
+            expect(humanoid.WalkSpeed).to.equal(18) -- 16 + 2
         end)
         
         it("should increase cost exponentially for subsequent purchases", function()
@@ -102,7 +102,7 @@ return function()
             expect(success2).to.equal(true)
             expect(coins.Value).to.equal(70) -- 90 - 20
             expect(attrs.SpeedPurchases).to.equal(2)
-            expect(humanoid.WalkSpeed).to.equal(24) -- 16 + 4 + 4
+            expect(humanoid.WalkSpeed).to.equal(20) -- 16 + 2 + 2
             
             -- Third purchase. math.pow(2, 2) = 4. Cost is 40.
             local success3 = ShopManager.processPurchase(player, "Speed")
@@ -181,7 +181,7 @@ return function()
             local player, character, humanoid = createMockPlayerAndCharacter(2, 3)
             ShopManager.applyUpgrades(player, character)
             
-            expect(humanoid.WalkSpeed).to.equal(16 + (4 * 2)) -- 24
+            expect(humanoid.WalkSpeed).to.equal(16 + (2 * 2)) -- 20
             expect(humanoid.JumpHeight).to.equal(50 + (5 * 3)) -- 65
             expect(humanoid.UseJumpPower).to.equal(false)
         end)
