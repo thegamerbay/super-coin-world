@@ -15,6 +15,7 @@ end)
 local CoinManager = require(script.Parent.CoinManager)
 local EnvironmentManager = require(script.Parent.EnvironmentManager)
 local ShopManager = require(script.Parent.ShopManager)
+local NpcManager = require(script.Parent.NpcManager)
 
 -- Updated save function
 local function savePlayerData(player: Player)
@@ -105,10 +106,18 @@ function GameLogic.init()
 
         for _, planet in ipairs(CollectionService:GetTagged("PlanetNode")) do
             local maxCoins = 8
-            if planet.Name == "Planet_Ice" then
-                maxCoins = 8
+            if planet.Name == "Planet_Start" then
+                maxCoins = 16
+                -- Spawn 1 Noob on Start Planet and override its broken scripts with Zombie's scripts
+                NpcManager.spawnNpc(planet :: BasePart, 27387485, 24, "n00b", 187789986)
+            elseif planet.Name == "Planet_Ice" then
+                maxCoins = 16
             elseif planet.Name == "Planet_Sand" then
                 maxCoins = 64
+                -- Spawn 2 Zombies on the Sand Planet
+                for z = 1, 2 do
+                    NpcManager.spawnNpc(planet :: BasePart, 187789986, 22, "Drooling Zombie")
+                end
             end
             for i = 1, maxCoins do
                 CoinManager.spawnCoin(planet :: BasePart)

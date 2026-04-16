@@ -26,11 +26,13 @@ function EnvironmentManager.spawnTrees()
         local treeCount = 5
         local currentTreeIds = TREE_IDS
         if pl.Name == "Planet_Start" then
-            treeCount = 10
+            treeCount = 16
             currentTreeIds = { 12550422930 }
         elseif pl.Name == "Planet_Sand" then
             treeCount = 40
             currentTreeIds = { 12555216218 }
+        elseif pl.Name == "Planet_Ice" then
+            treeCount = 8
         end
 
         local propsToSpawn = {}
@@ -38,6 +40,9 @@ function EnvironmentManager.spawnTrees()
         -- Priority items first
         if pl.Name == "Planet_Sand" then
             table.insert(propsToSpawn, 13012329931) -- House
+        elseif pl.Name == "Planet_Ice" then
+            table.insert(propsToSpawn, 67187780) -- Snowman
+            table.insert(propsToSpawn, 67187806) -- Christmas Tree
         end
         
         -- Trees second
@@ -92,6 +97,8 @@ function EnvironmentManager.spawnTrees()
                 local sinkDepth = 1.5
                 if randomId == 13012329931 then
                     sinkDepth = 3.5
+                elseif randomId == 67187780 or randomId == 67187806 then
+                    sinkDepth = 0.2 -- Raise the snowman and Christmas tree out of the snow!
                 end
                 local spawnRadius = radius + (size.Y / 2) - sinkDepth
 

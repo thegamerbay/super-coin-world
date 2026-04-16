@@ -137,7 +137,9 @@ function CoinManager.handleCoinTouched(otherPart: BasePart, coin: BasePart, coin
 
     if humanoid then
         local player = Players:GetPlayerFromCharacter(character)
-        if player then
+        local isCoinCollectorNpc = CollectionService:HasTag(character, "CoinCollector")
+        
+        if player or isCoinCollectorNpc then
             local collectPos = coin.Position
             local collectColor = coin.Color
 
@@ -147,11 +149,13 @@ function CoinManager.handleCoinTouched(otherPart: BasePart, coin: BasePart, coin
                 coin:Destroy()
             end
 
-            local leaderstats = player:FindFirstChild("leaderstats")
-            if leaderstats then
-                local coins = leaderstats:FindFirstChild("Coins")
-                if coins and coins:IsA("IntValue") then
-                    coins.Value += stats.value
+            if player then
+                local leaderstats = player:FindFirstChild("leaderstats")
+                if leaderstats then
+                    local coins = leaderstats:FindFirstChild("Coins")
+                    if coins and coins:IsA("IntValue") then
+                        coins.Value += stats.value
+                    end
                 end
             end
             
