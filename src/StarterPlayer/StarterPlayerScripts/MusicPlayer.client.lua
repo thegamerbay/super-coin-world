@@ -1,5 +1,6 @@
 --!strict
 local SoundService = game:GetService("SoundService")
+local ContentProvider = game:GetService("ContentProvider")
 
 local TRACK_LIST = {
     "rbxassetid://127101042421527",  -- The Unspooling
@@ -19,26 +20,30 @@ local TRACK_LIST = {
 }
 
 local currentTrackIndex = 1
-
--- Shuffle the playlist
 local rng = Random.new()
+
+-- Shuffle tracks
 for i = #TRACK_LIST, 2, -1 do
     local j = rng:NextInteger(1, i)
     TRACK_LIST[i], TRACK_LIST[j] = TRACK_LIST[j], TRACK_LIST[i]
 end
 
--- Create the Sound object exclusively on the server
 local musicPlayer = Instance.new("Sound")
 musicPlayer.Name = "BackgroundMusic"
 musicPlayer.Volume = 0.3
 musicPlayer.Parent = SoundService
 
 local function playNextTrack()
-    if not musicPlayer then return end
-    
-    musicPlayer.SoundId = TRACK_LIST[currentTrackIndex]
+    local nextId = TRACK_LIST[currentTrackIndex]
+    musicPlayer.SoundId = nextId
+
+    -- Preload heavy/long tracks before playback
+    if not musicPlayer.IsLoaded then
+        ContentProvider:PreloadAsync({musicPlayer})
+    end
+
     musicPlayer:Play()
-    
+
     currentTrackIndex += 1
     if currentTrackIndex > #TRACK_LIST then
         currentTrackIndex = 1
