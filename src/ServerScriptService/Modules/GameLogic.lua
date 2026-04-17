@@ -144,6 +144,12 @@ function GameLogic.init()
     end)
 
     Players.PlayerAdded:Connect(GameLogic.onPlayerAdded)
+    for _, player in ipairs(Players:GetPlayers()) do
+        task.spawn(function()
+            GameLogic.onPlayerAdded(player)
+        end)
+    end
+
     Players.PlayerRemoving:Connect(function(player: Player)
         savePlayerData(player)
     end)
