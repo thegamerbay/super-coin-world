@@ -1,6 +1,7 @@
 --!strict
 local Players = game:GetService("Players")
 local localPlayer = Players.LocalPlayer
+local ClientCoinUI = require(script.Parent:WaitForChild("Modules"):WaitForChild("ClientCoinUI"))
 
 print("====================================")
 print("Welcome to the game, " .. localPlayer.Name .. "!")
@@ -11,8 +12,11 @@ print("====================================")
 local function onLeaderstatsAdded(leaderstats: Instance)
     local coinsValue = leaderstats:WaitForChild("Coins") :: IntValue
     
+    ClientCoinUI.init()
+    ClientCoinUI.updateCoins(coinsValue.Value)
+    
     coinsValue.Changed:Connect(function(newValue: number)
-        print("Ding! You now have " .. tostring(newValue) .. " coins")
+        ClientCoinUI.updateCoins(newValue)
     end)
 end
 
