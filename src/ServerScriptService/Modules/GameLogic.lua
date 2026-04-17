@@ -93,7 +93,19 @@ function GameLogic.init()
     planet3.Parent = Workspace
     CollectionService:AddTag(planet3, "PlanetNode")
 
-    -- 4. Spawn point on top of first planet
+    -- 4. Create Magma Planet
+    local planet4 = Instance.new("Part")
+    planet4.Name = "Planet_Magma"
+    planet4.Shape = Enum.PartType.Ball
+    planet4.Size = Vector3.new(200, 200, 200)
+    planet4.Position = Vector3.new(0, -175, 200)
+    planet4.Anchored = true
+    planet4.Color = Color3.fromRGB(35, 30, 30)
+    planet4.Material = Enum.Material.CrackedLava
+    planet4.Parent = Workspace
+    CollectionService:AddTag(planet4, "PlanetNode")
+
+    -- 5. Spawn point on top of first planet
     local spawnLocation = Instance.new("SpawnLocation")
     spawnLocation.Size = Vector3.new(6, 1, 6)
     spawnLocation.Position = Vector3.new(0, 40, 0) -- Y = 40 (half size of planet 80)
@@ -115,11 +127,17 @@ function GameLogic.init()
             elseif planet.Name == "Planet_Sand" then
                 maxCoins = 64
                 -- Spawn 2 Zombies on the Sand Planet
-                for z = 1, 2 do
+                for _ = 1, 2 do
                     NpcManager.spawnNpc(planet :: BasePart, 187789986, 22, "Drooling Zombie")
                 end
+            elseif planet.Name == "Planet_Magma" then
+                maxCoins = 128
+                -- Spawn 5 Devil Noobs on Magma Planet, overriding with working Zombie animation scripts
+                for _ = 1, 5 do
+                    NpcManager.spawnNpc(planet :: BasePart, 15200823356, 26, "Devil Noob", 187789986)
+                end
             end
-            for i = 1, maxCoins do
+            for _ = 1, maxCoins do
                 CoinManager.spawnCoin(planet :: BasePart)
             end
         end

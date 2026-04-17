@@ -33,6 +33,9 @@ return function()
             local sandPlanet = Workspace:FindFirstChild("Planet_Sand")
             expect(sandPlanet).to.be.ok()
 
+            local magmaPlanet = Workspace:FindFirstChild("Planet_Magma")
+            expect(magmaPlanet).to.be.ok()
+
             local spawnLocation = Workspace:FindFirstChild("SpawnLocation")
             expect(spawnLocation).to.be.ok()
             expect(spawnLocation.Name).to.equal("SpawnLocation")

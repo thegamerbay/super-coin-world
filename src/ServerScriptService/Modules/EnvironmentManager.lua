@@ -33,6 +33,9 @@ function EnvironmentManager.spawnTrees()
             currentTreeIds = { 12555216218 }
         elseif pl.Name == "Planet_Ice" then
             treeCount = 8
+        elseif pl.Name == "Planet_Magma" then
+            treeCount = 50
+            currentTreeIds = { 5575673162 }
         end
 
         local propsToSpawn = {}
@@ -46,7 +49,7 @@ function EnvironmentManager.spawnTrees()
         end
         
         -- Trees second
-        for i = 1, treeCount do
+        for _ = 1, treeCount do
             table.insert(propsToSpawn, currentTreeIds[math.random(1, #currentTreeIds)])
         end
 
@@ -62,7 +65,7 @@ function EnvironmentManager.spawnTrees()
         if success and loadedModel then
             -- Extract the tree itself from the InsertService wrapper
             local tree = loadedModel:GetChildren()[1]
-            if not tree or not tree:IsA("Model") then
+            if not tree or (not tree:IsA("Model") and not tree:IsA("BasePart")) then
                 loadedModel:Destroy()
                 continue
             end
@@ -75,6 +78,9 @@ function EnvironmentManager.spawnTrees()
             end
 
             -- Anchor all parts so the tree doesn't fall apart
+            if tree:IsA("BasePart") then
+                tree.Anchored = true
+            end
             for _, part in pairs(tree:GetDescendants()) do
                 if part:IsA("BasePart") then
                     part.Anchored = true
@@ -82,7 +88,13 @@ function EnvironmentManager.spawnTrees()
             end
 
             tree.Parent = Workspace
-            local boundingBoxCFrame, size = tree:GetBoundingBox()
+            
+            local boundingBoxCFrame, size
+            if tree:IsA("Model") then
+                boundingBoxCFrame, size = tree:GetBoundingBox()
+            else
+                boundingBoxCFrame, size = tree.CFrame, tree.Size
+            end
             
             -- Search for a free spot on the planet's surface (up to 15 attempts)
             local finalCFrame = nil
@@ -97,6 +109,8 @@ function EnvironmentManager.spawnTrees()
                 local sinkDepth = 1.5
                 if randomId == 13012329931 then
                     sinkDepth = 3.5
+                elseif randomId == 5575673162 then
+                    sinkDepth = 2.5
                 elseif randomId == 67187780 or randomId == 67187806 then
                     sinkDepth = 0.2 -- Raise the snowman and Christmas tree out of the snow!
                 end
@@ -123,9 +137,13 @@ function EnvironmentManager.spawnTrees()
 
             if finalCFrame then
                 -- Smoothly move the model to the found spherical location
-                -- Determine the offset between the model's Pivot and its bounding box center
-                local pivotOffset = tree:GetPivot():ToObjectSpace(boundingBoxCFrame)
-                tree:PivotTo(finalCFrame * pivotOffset:Inverse())
+                if tree:IsA("Model") then
+                    -- Determine the offset between the model's Pivot and its bounding box center
+                    local pivotOffset = tree:GetPivot():ToObjectSpace(boundingBoxCFrame)
+                    tree:PivotTo(finalCFrame * pivotOffset:Inverse())
+                else
+                    tree.CFrame = finalCFrame
+                end
             else
                 -- If we couldn't find a spot, delete the tree
                 tree:Destroy()
