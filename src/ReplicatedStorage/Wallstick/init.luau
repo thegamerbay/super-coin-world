@@ -275,8 +275,13 @@ function WallstickClass._stepRenderCharacter(self: Wallstick, _dt: number)
 	self.fake.humanoid.UseJumpPower = self.real.humanoid.UseJumpPower
 	-- ====================================
 
-	self.fake.humanoid.Jump = self.real.humanoid.Jump
-	self.fake.humanoid:Move(GravityCamera.getMoveVector(geometryCameraCF), false)
+	if self.real.humanoid.Sit then
+		self.fake.humanoid.Sit = true
+	else
+		self.fake.humanoid.Sit = false
+		self.fake.humanoid.Jump = self.real.humanoid.Jump
+		self.fake.humanoid:Move(GravityCamera.getMoveVector(geometryCameraCF), false)
+	end
 
 	self.streamingFocus.alignPosition.Position = fakeRootCF.Position
 	self.streamingFocus.alignOrientation.CFrame = fakeRootCF
@@ -299,9 +304,23 @@ function WallstickClass._stepPhysics(self: Wallstick, _dt: number)
 
 	local realRootCFrame = self:_getCalculatedRealRootCFrame()
 
-	self.real.rootPart.CFrame = realRootCFrame
-	self.real.alignPosition.Position = realRootCFrame.Position
-	self.real.alignOrientation.CFrame = realRootCFrame
+	if self.real.humanoid.Sit then
+		self.real.alignPosition.Enabled = false
+		self.real.alignOrientation.Enabled = false
+
+		-- Sync the fake character to the real character so that exiting a vehicle
+		-- doesn't teleport the player back to where they entered it.
+		local originCF = self:_getOriginCFrame()
+		local offset = self.part.CFrame:ToObjectSpace(self.real.rootPart.CFrame)
+		self.fake.rootPart.CFrame = originCF * offset
+	else
+		self.real.alignPosition.Enabled = true
+		self.real.alignOrientation.Enabled = true
+
+		self.real.rootPart.CFrame = realRootCFrame
+		self.real.alignPosition.Position = realRootCFrame.Position
+		self.real.alignOrientation.CFrame = realRootCFrame
+	end
 
 	self:_updateCollisionGeometry()
 	self:_trySendReplication(false)

@@ -115,6 +115,7 @@ function GameLogic.init()
 
     task.spawn(function()
         EnvironmentManager.spawnTrees()
+        EnvironmentManager.spawnVehicles()
 
         for _, planet in ipairs(CollectionService:GetTagged("PlanetNode")) do
             local maxCoins = 8

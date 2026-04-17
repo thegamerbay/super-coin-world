@@ -3,6 +3,7 @@ local EnvironmentManager = {}
 local InsertService = game:GetService("InsertService")
 local Workspace = game:GetService("Workspace")
 local CollectionService = game:GetService("CollectionService")
+local VehicleGravity = require(script.Parent.VehicleGravity)
 
 local TREE_IDS = {
     12549617200
@@ -156,6 +157,65 @@ function EnvironmentManager.spawnTrees()
             end
         end
     end
+    end
+end
+
+function EnvironmentManager.spawnVehicles()
+    local planets = CollectionService:GetTagged("PlanetNode")
+    
+    local targetPlanets = {}
+    for _, pl in ipairs(planets) do
+        if pl.Name == "Planet_Sand" or pl.Name == "Planet_Magma" then
+            table.insert(targetPlanets, pl)
+        end
+    end
+
+    if #targetPlanets == 0 then return end
+    
+    -- Load Dune Buggy
+    local success, loadedModel = pcall(function()
+        return InsertService:LoadAsset(6433272094)
+    end)
+
+    if success and loadedModel then
+        local baseBuggy = loadedModel:GetChildren()[1]
+        if baseBuggy and baseBuggy:IsA("Model") then
+            -- 🛡️ ANTI-VIRUS: Remove any suspicious free-model scripts but KEEP vehicle constraint/weld scripts
+            -- The standard Dune Buggy needs its 'Drive' and 'Config' scripts, so we don't blindly delete all.
+            for _, desc in pairs(baseBuggy:GetDescendants()) do
+                -- We only remove commonly known virus scripts or things named 'Infection'/'Virus' 
+                -- We're keeping standard LocalScripts and Scripts for vehicle handling.
+                if desc:IsA("Script") and (desc.Name == "Infection" or desc.Name == "Virus") then
+                    desc:Destroy()
+                end
+                -- 🚀 SPHERICAL FIX: Remove built-in righting mechanisms that lock the car upright globally.
+                -- Deleting them breaks the internal 'Chassis' script, so instead we completely neutralize their power.
+                if desc:IsA("AlignOrientation") then
+                    desc.MaxTorque = 0
+                    desc.MaxAngularVelocity = 0
+                elseif desc:IsA("BodyGyro") then
+                    desc.MaxTorque = Vector3.new(0,0,0)
+                    desc.P = 0
+                end
+            end
+
+            for _, targetPlanet in ipairs(targetPlanets) do
+                local buggy = baseBuggy:Clone()
+                buggy.Parent = Workspace
+                
+                local boundingBoxCFrame, size = buggy:GetBoundingBox()
+                local radius = (targetPlanet.Size.X / 2)
+                
+                -- Place it top of the Planet exactly
+                local worldPos = targetPlanet.Position + Vector3.new(0, radius + (size.Y / 2) + 1, 0)
+                local pivotOffset = buggy:GetPivot():ToObjectSpace(boundingBoxCFrame)
+                buggy:PivotTo(CFrame.new(worldPos) * pivotOffset:Inverse())
+
+                -- Apply custom spherical gravity to Buggy
+                VehicleGravity.setupVehicle(buggy)
+            end
+        end
+        loadedModel:Destroy()
     end
 end
 
