@@ -15,14 +15,19 @@ function ClientCoinUI.init()
     isInitialized = true
 
     local player = Players.LocalPlayer
-    local playerGui = player:WaitForChild("PlayerGui")
+    local playerGui
+    if player then
+        playerGui = player:WaitForChild("PlayerGui")
+    end
 
     local screenGui = Instance.new("ScreenGui")
     screenGui.Name = "CoinCounterUI"
     screenGui.ResetOnSpawn = false
     screenGui.IgnoreGuiInset = true
     screenGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
-    screenGui.Parent = playerGui
+    if playerGui then
+        screenGui.Parent = playerGui
+    end
 
     -- Main Container Frame
     local newContainer = Instance.new("Frame")

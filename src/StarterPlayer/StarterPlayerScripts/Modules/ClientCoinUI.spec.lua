@@ -24,9 +24,9 @@ return function()
             expect(container.Parent.Name).to.equal("CoinCounterUI")
             expect(container.Parent:IsA("ScreenGui")).to.equal(true)
             
-            -- Specifically placed at Top Right with Margin Down
-            expect(container.AnchorPoint.X).to.equal(1)
-            expect(container.Position.Y.Offset).to.equal(60)
+            -- Specifically placed at Top Center
+            expect(container.AnchorPoint.X).to.equal(0.5)
+            expect(container.Position.Y.Offset).to.equal(10)
             
             local valueLabel = container:FindFirstChild("Value")
             expect(valueLabel).to.be.ok()
