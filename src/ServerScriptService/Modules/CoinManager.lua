@@ -106,6 +106,14 @@ function CoinManager.spawnCoin(specificPlanet: BasePart?)
         coin.Position = finalPos
     end
     -- =======================================
+    -- Set original visual stats for the client animation to read
+    coin:SetAttribute("VisualThickness", stats.thickness)
+    coin:SetAttribute("VisualDiameter", stats.diameter)
+    
+    -- Increase the physical hitbox size for an easier collection radius
+    local pickupBonus = 4
+    coin.Size = Vector3.new(stats.thickness + pickupBonus, stats.diameter + pickupBonus, stats.diameter + pickupBonus)
+
     coin.Transparency = 1 -- Invisible on the server
     coin.Color = stats.color
     coin.Material = Enum.Material.Neon

@@ -19,7 +19,10 @@ function ClientCoinAnimator.onCoinAdded(coin: BasePart)
 
     if ClientCoinAnimator.activeCoins[coin] then return end -- Prevent duplicates
 
-    local targetSize = coin.Size -- Remember original size
+    -- Use attributes for original visual size (fallback to coin.Size if original is missing)
+    local thickness = coin:GetAttribute("VisualThickness") or coin.Size.X
+    local diameter = coin:GetAttribute("VisualDiameter") or coin.Size.Y
+    local targetSize = Vector3.new(thickness, diameter, diameter)
 
     -- Generate purely visual replica
     local clone = Instance.new("Part")
